@@ -8,4 +8,4 @@ using namespace std;
 using json = nlohmann::json;
 
 bool createDir (string name);
-void dirMake();
+void dbInit();

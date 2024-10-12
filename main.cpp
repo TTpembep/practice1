@@ -1,16 +1,10 @@
 #include <iostream>
 #include <string>
-//#include <fstream>
-//#include "json.hpp"
-#include "dirMaker.h"
+#include "DBinit.h"
 using namespace std;
-//using json = nlohmann::json;
 
 int main(){
-
-    //Тут должно быть условие проверки существования директорий
-    //Если нету, то 
-    dirMake();
+    dbInit(); //Функция создания и проверки наличия БД
 
     return 0;
 }
