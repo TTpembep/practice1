@@ -68,15 +68,15 @@ void dbInit(){
           fout.close();
           cout << "Created "+schemeName+"/"+tableName+"/"+tableName+"_lock" << endl;
           }fin.close();
-          fin.open(schemeName+"/"+tableName+"/tuplesLimit");
+          fin.open(schemeName+"/"+tableName+"/tuples_limit");
           if (fin.good()){
-            cout << schemeName+"/"+tableName+"/tuplesLimit is already exist" << endl;
+            cout << schemeName+"/"+tableName+"/tuples_limit is already exist" << endl;
           }else{
             ofstream fout;
-            fout.open(schemeName+"/"+tableName+"/tuplesLimit");
+            fout.open(schemeName+"/"+tableName+"/tuples_limit");
             fout << tuplesLimit;
             fout.close();
-            cout << "Created "+schemeName+"/"+tableName+"/tuplesLimit" << endl;
+            cout << "Created "+schemeName+"/"+tableName+"/tuples_limit" << endl;
           }fin.close();
         }   
     }
