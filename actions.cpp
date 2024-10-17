@@ -35,58 +35,47 @@ void insertCSV(const Schema& schema, const SQLQuery& query) {
     int primaryKey = getPrimaryKey(schema.name+"/"+query.tableName+"/"+query.tableName);
     int fileCount= 1;
     string filePath = schema.name+"/"+query.tableName+"/"+to_string(fileCount)+".csv";
-    //ofstream outfile(filePath, ios::app); //Открываем файл для добавления
-    //ios::app: Это флаг, который указывает, что файл должен быть открыт в режиме добавления (append mode).
-    //Это означает, что любые данные, записанные в файл, будут добавлены в конец существующего содержимого файла,
-    //а не перезаписывать его.
     int rowCount = getRowCount(filePath);
-    
     while (rowCount >= schema.tuples_limit) {   //Проверка количества строк
         fileCount++;    //Если больше предела, переходим в новый файл
         rowCount = 0;   //Сбрасываем счетчик для нового файла
         filePath = schema.name+"/"+query.tableName+"/"+to_string(fileCount)+".csv";
         rowCount = getRowCount(filePath);
     }
-
-    ofstream outfile(filePath, ios::app);
+    ifstream fin(filePath); //Проверка на совпадение количества добавляемых 
+    if(!fin.is_open()) {    //элементов с количеством колонок в таблице
+        cout << "File "+filePath+" not found. " <<endl;
+        return;
+    };
+    int count_column =0;
+    string column_name;
+    getline(fin,column_name);
+    stringstream ss(column_name);
+    while(getline(ss,column_name,',')) {
+        count_column++;
+    }
+    for (Node * current = query.values->head;current!=nullptr;current=current->next,count_column--);
+    if (count_column!=1) {
+        cout << "Insert error. Wrong amount of arguments. " << endl;
+        return;
+    }
+    //ios::app: Это флаг, который указывает, что файл должен быть открыт в режиме добавления (append mode).
+    //Это означает, что любые данные, записанные в файл, будут добавлены в конец существующего содержимого файла,
+    //а не перезаписывать его.
+    ofstream outfile(filePath, ios::app);   //Открываем файл для добавления
     if (outfile.is_open()) {
-        /*
-        string temp = to_string(primaryKey) + ",";
-        stringstream values_ss(values);
-        string value;
-        while (getline(values_ss, value, ',')) {
-            while (value[0]==' '){
-                value.erase(0, 1);
-            }
-            value.erase(0, 1); // Удаляем кавычки
-            value.erase(value.size() - 1, 1);
-            temp += value + ",";
-        }temp.erase(temp.size()-1,1);
-        int columnCount;
-        ifstream fin (filePath);
-        string columnRow;
-        getline(fin, columnRow);
-        //columnCount = commaCount(columnRow);
-        */
-        
-        /*
-        //Добавляем первичный ключ как первую колонку
-        outfile << primaryKey << ",";
-        //Добавляем остальные значения
+        outfile << primaryKey << ",";   //Добавляем первичный ключ как первую колонку
         for (Node* current = query.values->head; current != nullptr; current = current->next) {
-            outfile << current->data;
+            outfile << current->data;   //Добавляем остальные значения
             if (current->next != nullptr) {
                 outfile << ",";
             }
         }
-        
-        outfile << endl;
-        outfile.close();
-        */
-        //Обновляем первичный ключ в файле
+        outfile << endl;    //Закрываем файл
+        outfile.close();    //Обновляем первичный ключ в файле
         updatePrimaryKey(schema.name+"/"+query.tableName+"/"+query.tableName, primaryKey + 1);
         cout << "Database updated succesfully. " << endl;
     } else {
-        cout << "Ошибка открытия файла " << filePath << endl;
+        cout << "An error occured when opening file " << filePath << endl;
     }
 }
