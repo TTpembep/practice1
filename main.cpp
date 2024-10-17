@@ -1,9 +1,11 @@
+//#include "structures.h"
 #include "DBinit.h"
 #include "syntaxCheck.h"
 #include "actions.h"
 
 int main(){
-    dbInit();   //Функция создания и проверки наличия БД
+    Schema schema;
+    dbInit(schema);   //Функция создания и проверки наличия БД
     cout << "Database ready. Waiting for query: ";
     string query;
     while (true){
@@ -24,7 +26,7 @@ int main(){
             getline(ss,token);  //Получение строки значений
             token.erase(0,1);
             token.erase(token.size()-1,1);
-            insertCSV("Scheme1", tableName, token); //Костыль с названием схемы
+            insertCSV(schema, tableName, token);
         }if (action == "DELETE"){   //Вызов функции удаления
             //костыль
         }if (action == "SELECT"){   //Вызов функции выборки
@@ -32,6 +34,7 @@ int main(){
         }if (action == "EXIT"){ //Выход из программы
             return 0;
         }
+        cout << "Waiting for query: ";
     }return 0;
 }
 //INSERT INTO table1 VALUES ('somedata', '12345', 'hello', 'goyda')

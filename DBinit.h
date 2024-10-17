@@ -5,11 +5,12 @@
 #include <string>
 #include <fstream>
 #include <sys/stat.h>
+#include "structures.h"
 #include "json.hpp"
 using namespace std;
 using json = nlohmann::json;
 
 bool createDir (string name);
-void dbInit();
+void dbInit(Schema& schema);
 
 #endif

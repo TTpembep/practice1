@@ -1,6 +1,6 @@
 #include "DBinit.h"
 
-bool createDir (string name) {
+bool createDir (string name) {  //Функция для создания директории
  if (mkdir(name.c_str(), 0755) == -1) {
     cout << "Error creating directory: Directory exists " << endl;
     return 0;
@@ -9,25 +9,22 @@ bool createDir (string name) {
   return 1;
   }
 }
-
-void dbInit(){
+void dbInit(Schema& schema){  //Основная функция создания и проверки наличия БД
   ifstream file("schema.json");
   json j;
   file >>j;
-  string schemeName;
-  int tuplesLimit;
   for ( const auto& data:j){
-  schemeName = data["name"].get<string>();
-  createDir(schemeName);
-  tuplesLimit=data["tuples_limit"].get<int>();
+  schema.name = data["name"].get<string>();
+  createDir(schema.name);
+  schema.tuples_limit=data["tuples_limit"].get<int>();
   for (const auto& [tableName, columns] : data["structure"].items()){
-    createDir(schemeName+"/"+tableName);
-    ifstream fin(schemeName+"/"+tableName+"/"+"1.csv");
+    createDir(schema.name+"/"+tableName);
+    ifstream fin(schema.name+"/"+tableName+"/"+"1.csv");
     if (fin.good()){
       cout << "1.csv already exist!" << endl;
       }else {
         ofstream fout;
-        fout.open (schemeName+"/"+tableName+"/"+"1.csv"); 
+        fout.open (schema.name+"/"+tableName+"/"+"1.csv"); 
         fout << tableName+"_" <<"pk" <<",";
         int i=0;
     
@@ -38,39 +35,29 @@ void dbInit(){
         }
         fout << endl;
         fout.close();
-        cout << "Created "+schemeName+"/"+tableName+"/"+tableName+"/1.csv" << endl;
+        cout << "Created "+schema.name+"/"+tableName+"/"+tableName+"/1.csv" << endl;
         }
         fin.close();
-        fin.open(schemeName+"/"+tableName+"/"+tableName+"_pk_sequence");
+        fin.open(schema.name+"/"+tableName+"/"+tableName+"_pk_sequence");
         if (fin.good()) {
-          cout << schemeName+"/"+tableName+"/"+tableName+"_pk_sequence is already exist!" << endl;
+          cout << schema.name+"/"+tableName+"/"+tableName+"_pk_sequence is already exist!" << endl;
         } else{
           ofstream fout;
-          fout.open(schemeName+"/"+tableName+"/"+tableName+"_pk_sequence");
+          fout.open(schema.name+"/"+tableName+"/"+tableName+"_pk_sequence");
           fout << 1;
           fout.close();
-          cout << "Created "+schemeName+"/"+tableName+"/"+tableName+"_pk_sequence" << endl;
+          cout << "Created "+schema.name+"/"+tableName+"/"+tableName+"_pk_sequence" << endl;
         }
         fin.close();
-        fin.open(schemeName+"/"+tableName+"/"+tableName+"_lock");
+        fin.open(schema.name+"/"+tableName+"/"+tableName+"_lock");
         if (fin.good()){
-          cout << schemeName+"/"+tableName+"/"+tableName+"_lock is already exist!" << endl;
+          cout << schema.name+"/"+tableName+"/"+tableName+"_lock is already exist!" << endl;
         }else{
           ofstream fout;
-          fout.open(schemeName+"/"+tableName+"/"+tableName+"_lock");
+          fout.open(schema.name+"/"+tableName+"/"+tableName+"_lock");
           fout << "0";
           fout.close();
-          cout << "Created "+schemeName+"/"+tableName+"/"+tableName+"_lock" << endl;
-          }fin.close();
-          fin.open(schemeName+"/"+tableName+"/tuples_limit");
-          if (fin.good()){
-            cout << schemeName+"/"+tableName+"/tuples_limit is already exist" << endl;
-          }else{
-            ofstream fout;
-            fout.open(schemeName+"/"+tableName+"/tuples_limit");
-            fout << tuplesLimit;
-            fout.close();
-            cout << "Created "+schemeName+"/"+tableName+"/tuples_limit" << endl;
+          cout << "Created "+schema.name+"/"+tableName+"/"+tableName+"_lock" << endl;
           }fin.close();
         }   
     }
