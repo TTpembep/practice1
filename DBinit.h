@@ -1,4 +1,6 @@
-#pragma once
+#ifndef INCLUDE_DBINIT_H
+#define INCLUDE_DBINIT_H
+
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -9,3 +11,5 @@ using json = nlohmann::json;
 
 bool createDir (string name);
 void dbInit();
+
+#endif

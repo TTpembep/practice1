@@ -1,9 +1,6 @@
-#include <iostream>
-#include <string>
 #include "DBinit.h"
 #include "syntaxCheck.h"
 #include "actions.h"
-using namespace std;
 
 int main(){
     dbInit();   //Функция создания и проверки наличия БД

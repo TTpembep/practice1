@@ -1,7 +1,4 @@
-#include <iostream>
-#include <string>
-#include <sstream>
-using namespace std;
+#include "syntaxCheck.h"
 
 bool isServiceWord(string word){
     string serviceWords = "INSERT INTO VALUES WHERE OR AND DELETE SELECT EXIT FROM";

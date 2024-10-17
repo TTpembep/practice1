@@ -1,8 +1,4 @@
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <sstream>
-using namespace std;
+#include "actions.h"
 
 int getPrimaryKey(const string& tablePath ){
     string filePath = tablePath + "_pk_sequence";
@@ -33,9 +29,6 @@ int getRowCount(const string& filePath) {
     }
     infile.close();
     return count;
-}
-int commaCount(const string& row){
-    
 }
 
 void insertCSV(const string& schemeName, const string& tableName, const string& values) {
@@ -80,7 +73,7 @@ void insertCSV(const string& schemeName, const string& tableName, const string& 
         ifstream fin (filePath);
         string columnRow;
         getline(fin, columnRow);
-        columnCount = commaCount(columnRow);
+        //columnCount = commaCount(columnRow);
         
         
         /*

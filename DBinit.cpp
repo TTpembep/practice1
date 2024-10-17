@@ -1,10 +1,4 @@
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <sys/stat.h>
-#include "json.hpp"
-using namespace std;
-using json = nlohmann::json;
+#include "DBinit.h"
 
 bool createDir (string name) {
  if (mkdir(name.c_str(), 0755) == -1) {
