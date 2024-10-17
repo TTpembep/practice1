@@ -31,10 +31,10 @@ int getRowCount(const string& filePath) {
     return count;
 }
 
-void insertCSV(const Schema& schema, const string& tableName, const string& values) {
-    int primaryKey = getPrimaryKey(schema.name+"/"+tableName+"/"+tableName);
+void insertCSV(const Schema& schema, const SQLQuery& query) {
+    int primaryKey = getPrimaryKey(schema.name+"/"+query.tableName+"/"+query.tableName);
     int fileCount= 1;
-    string filePath = schema.name+"/"+tableName+"/"+to_string(fileCount)+".csv";
+    string filePath = schema.name+"/"+query.tableName+"/"+to_string(fileCount)+".csv";
     //ofstream outfile(filePath, ios::app); //Открываем файл для добавления
     //ios::app: Это флаг, который указывает, что файл должен быть открыт в режиме добавления (append mode).
     //Это означает, что любые данные, записанные в файл, будут добавлены в конец существующего содержимого файла,
@@ -44,7 +44,7 @@ void insertCSV(const Schema& schema, const string& tableName, const string& valu
     while (rowCount >= schema.tuples_limit) {   //Проверка количества строк
         fileCount++;    //Если больше предела, переходим в новый файл
         rowCount = 0;   //Сбрасываем счетчик для нового файла
-        filePath = schema.name+"/"+tableName+"/"+to_string(fileCount)+".csv";
+        filePath = schema.name+"/"+query.tableName+"/"+to_string(fileCount)+".csv";
         rowCount = getRowCount(filePath);
     }
 
@@ -84,7 +84,7 @@ void insertCSV(const Schema& schema, const string& tableName, const string& valu
         outfile.close();
         */
         //Обновляем первичный ключ в файле
-        updatePrimaryKey(schema.name+"/"+tableName+"/"+tableName, primaryKey + 1);
+        updatePrimaryKey(schema.name+"/"+query.tableName+"/"+query.tableName, primaryKey + 1);
         cout << "Database updated succesfully. " << endl;
     } else {
         cout << "Ошибка открытия файла " << filePath << endl;

@@ -5,38 +5,50 @@ bool isServiceWord(string word){
     if (serviceWords.find(word) == string::npos) return 0;
     return 1;
 }
-bool syntaxCheck(string query){
+SQLQuery syntaxCheck(string query){
+    SQLQuery temp;
     stringstream ss (query);
-    string action;
-    getline(ss, action, ' ');
+    getline(ss, temp.action, ' ');
     string token;
-    if (action == "INSERT"){
+    if (temp.action == "INSERT"){
         getline(ss, token, ' ');
         if (token!="INTO"){
-            cout << "Syntax error. ";
-            return 0;
+            temp.isRight = false;
+            return temp;
         }
         getline(ss, token, ' ');
         if (isServiceWord(token)){
-            cout << "Syntax error. ";
-            return 0;
+            temp.isRight = false;
+            return temp;
         }
+        temp.tableName = token;
         getline(ss, token, ' ');
         if (token!="VALUES"){
-            cout << "Syntax error. ";
-            return 0;
+            temp.isRight = false;
+            return temp;
         }
         getline(ss, token);
         if (token[0] != '(' || token[token.size()-1] != ')'){
-            cout << "Syntax error. ";
-            return 0;
-        }return 1;
-    }if (action == "DELETE"){ 
+            temp.isRight = false;
+            return temp;
+        }
+        temp.values = new fList();
+        stringstream valueSS (token);
+        string value;
+        while (getline(valueSS,value, '\'')){
+            if (value[0] != '(' && value[0] != ',' && value[0] != ')'){
+                temp.values->push_back(value);
+            }
+        }temp.isRight = true;
+        return temp;
+    }if (temp.action == "DELETE"){ 
         //костыль
-    }if (action == "SELECT"){
+    }if (temp.action == "SELECT"){
          //костыль
-    }if (action == "EXIT" and query == "EXIT"){ 
-        return 1;
-    }return 0;
+    }if (temp.action == "EXIT" and query == "EXIT"){ 
+        temp.isRight = true;
+        return temp;
+    }temp.isRight = false;
+    return temp;
 }
 //INSERT INTO table1 VALUES ('somedata', '12345')

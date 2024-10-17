@@ -4,9 +4,10 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include "structures.h"
 using namespace std;
 
 bool isServiceWord(string word);
-bool syntaxCheck(string query);
+SQLQuery syntaxCheck(string query);
 
 #endif
