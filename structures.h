@@ -10,10 +10,14 @@ struct Node {   //Структура данных для узла односвя
     Node* next;
     Node(const string& data) : data(data), next(nullptr) {}
 };
-struct fList { //Структура данных для односвязанного списка
+struct fList {  //Структура данных для односвязанного списка
     Node* head;
 
     fList() : head(nullptr) {}
+
+    ~fList() {  //Деструктор
+        clear();
+    }
 
     void insert(const string& data) {   //Добавление элемента в начало списка
         Node* newNode = new Node(data);
