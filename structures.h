@@ -92,13 +92,13 @@ struct Schema { //Структура данных для хранения инф
     int tuples_limit;
 };
 struct SQLQuery {
-    string action;
-    string tableName;
-    fList* values;
-    //fList* columns; //Для SELECT - ?
-    //fList* tables;
-    //string condition;
-    bool isRight;
+    string action;  //Запись действия
+    string tableName;   //Запись имени таблицы при добавлении
+    fList* tables;  //Запись таблиц фильтра WHERE
+    fList* columns; //Запись колонок фильтра WHERE
+    fList* values;  //Запись значений
+    string condition;   //Запись оператора OR AND
+    bool isRight;   //Проверка синтаксиса
 };
 
 #endif

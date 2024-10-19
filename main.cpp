@@ -29,5 +29,10 @@ int main(){
         }
     }return 0;
 }
-//INSERT INTO table1 VALUES ('somedata', '12345', 'hello', 'goyda')
-//EXIT
+/*
+INSERT INTO table1 VALUES ('somedata', '12345', 'hello', 'melon')
+INSERT INTO table1 VALUES ('chicken', 'world', '123', 'peace')
+INSERT INTO table2 VALUES ('17', 'chicken')
+DELETE FROM table1 WHERE table1.column1 = table2.column2 AND table1.column3 = '123'
+EXIT
+*/
