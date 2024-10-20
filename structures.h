@@ -94,10 +94,13 @@ struct Schema { //Структура данных для хранения инф
 struct SQLQuery {
     string action;  //Запись действия
     string tableName;   //Запись имени таблицы при добавлении
+    fList* values;  //Запись значений
+    string delLine; //Обработка строки функции DELETE
+
     fList* tables;  //Запись таблиц фильтра WHERE
     fList* columns; //Запись колонок фильтра WHERE
-    fList* values;  //Запись значений
     string condition;   //Запись оператора OR AND
+    
     bool isRight;   //Проверка синтаксиса
 };
 

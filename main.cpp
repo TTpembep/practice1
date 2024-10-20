@@ -1,4 +1,3 @@
-//#include "structures.h"
 #include "DBinit.h"
 #include "syntaxCheck.h"
 #include "actions.h"
@@ -12,7 +11,7 @@ int main(){
         SQLQuery parsedQuery;
         cout << "Waiting for query: ";
         do {
-            getline(cin, query);
+            getline(cin, query);    //Проверка синтаксиса команды
             parsedQuery = syntaxCheck(query);
             if (!parsedQuery.isRight) {
             cout << "Command is not defined. Try again: ";
@@ -21,7 +20,7 @@ int main(){
         if (parsedQuery.action == "INSERT"){    //Вызов функции вставки
             insertCSV(schema, parsedQuery);
         }if (parsedQuery.action == "DELETE"){   //Вызов функции удаления
-            //костыль
+            deleteFromCSV(schema, parsedQuery);
         }if (parsedQuery.action == "SELECT"){   //Вызов функции выборки
             //костыль
         }if (parsedQuery.action == "EXIT"){ //Выход из программы
@@ -33,6 +32,8 @@ int main(){
 INSERT INTO table1 VALUES ('somedata', '12345', 'hello', 'melon')
 INSERT INTO table1 VALUES ('chicken', 'world', '123', 'peace')
 INSERT INTO table2 VALUES ('17', 'chicken')
-DELETE FROM table1 WHERE table1.column1 = table2.column2 AND table1.column3 = '123'
+DELETE FROM table1 WHERE table1.column3 = '123' AND table1.column1 = 'chicken'
+DELETE FROM table1 WHERE table2.column1 = '17'
+SELECT table1.
 EXIT
 */

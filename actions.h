@@ -13,4 +13,8 @@ void updatePrimaryKey(const string& tableName, int newPrimaryKey);
 int getRowCount(const string& filePath);
 void insertCSV(const Schema& schema, const SQLQuery& query);
 
+string buildConditionString(Node* node);
+bool isConditionTrue(const string& line, const string& columnNames, const string* delLine);
+void deleteFromCSV(const Schema& schema, const SQLQuery& query);
+
 #endif
