@@ -8,6 +8,10 @@
 #include "structures.h"
 using namespace std;
 
+bool isUnlocked(const string& schemaName, const string& tableName);
+void lock(const string& schemaName, const string& tableName);
+void unlock(const string& schemaName, const string& tableName);
+
 int getPrimaryKey(const string& tablePath );
 void updatePrimaryKey(const string& tableName, int newPrimaryKey);
 int getRowCount(const string& filePath);

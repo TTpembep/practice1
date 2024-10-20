@@ -18,11 +18,23 @@ int main(){
             }
             } while (!parsedQuery.isRight);
         if (parsedQuery.action == "INSERT"){    //Вызов функции вставки
-            insertCSV(schema, parsedQuery);
+            if (isUnlocked(schema.name, parsedQuery.tableName)){    //Проверка что таблица доступна
+                lock(schema.name,parsedQuery.tableName);
+                insertCSV(schema, parsedQuery);
+                unlock(schema.name,parsedQuery.tableName);
+            }
         }if (parsedQuery.action == "DELETE"){   //Вызов функции удаления
-            deleteFromCSV(schema, parsedQuery);
+            if (isUnlocked(schema.name, parsedQuery.tableName)){
+                lock(schema.name,parsedQuery.tableName);
+                deleteFromCSV(schema, parsedQuery);
+                unlock(schema.name,parsedQuery.tableName);
+            }
         }if (parsedQuery.action == "SELECT"){   //Вызов функции выборки
-            //костыль
+            if (isUnlocked(schema.name, parsedQuery.tableName)){
+                lock(schema.name,parsedQuery.tableName);
+                //костыль
+                unlock(schema.name,parsedQuery.tableName);
+            }
         }if (parsedQuery.action == "EXIT"){ //Выход из программы
             return 0;
         }
@@ -33,6 +45,7 @@ INSERT INTO table1 VALUES ('somedata', '12345', 'hello', 'melon')
 INSERT INTO table1 VALUES ('chicken', 'world', '123', 'peace')
 INSERT INTO table2 VALUES ('17', 'chicken')
 DELETE FROM table1 WHERE table1.column3 = '123' AND table1.column1 = 'chicken'
+DELETE FROM table1 WHERE table1.table1_pk = '4'
 DELETE FROM table1 WHERE table2.column1 = '17'
 SELECT table1.
 EXIT

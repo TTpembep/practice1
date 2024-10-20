@@ -1,5 +1,31 @@
 #include "actions.h"
 
+bool isUnlocked(const string& schemaName, const string& tableName){
+    ifstream fin(schemaName+"/"+tableName+"/"+tableName+"_lock");
+    if(!fin.is_open()) {    
+        cout << "File "+ schemaName+"/"+tableName+"/"+tableName+"_lock not found. " <<endl;
+        return 0;
+    };
+    string lockStatus;
+    getline(fin,lockStatus);
+    if (lockStatus == "0"){
+        return 1;
+    }else {
+        cout << "The table is not avaible now. Try again later. " << endl;
+        return 0;
+    }
+}
+void lock(const string& schemaName, const string& tableName){
+    std::ofstream outputFile(schemaName+"/"+tableName+"/"+tableName+"_lock");
+    outputFile << "1";
+    outputFile.close();
+}
+void unlock(const string& schemaName, const string& tableName){
+    std::ofstream outputFile(schemaName+"/"+tableName+"/"+tableName+"_lock");
+    outputFile << "0";
+    outputFile.close();
+}
+
 int getPrimaryKey(const string& tablePath ){
     string filePath = tablePath + "_pk_sequence";
     ifstream infile(filePath);
@@ -42,8 +68,8 @@ void insertCSV(const Schema& schema, const SQLQuery& query) {
         filePath = schema.name+"/"+query.tableName+"/"+to_string(fileCount)+".csv";
         rowCount = getRowCount(filePath);
     }
-    ifstream fin(filePath); //Проверка на совпадение количества добавляемых 
-    if(!fin.is_open()) {    //элементов с количеством колонок в таблице
+    ifstream fin(filePath);  
+    if(!fin.is_open()) {    
         cout << "File "+filePath+" not found. " <<endl;
         return;
     };
@@ -51,8 +77,8 @@ void insertCSV(const Schema& schema, const SQLQuery& query) {
     string columnName;
     getline(fin,columnName);
     stringstream ss(columnName);
-    while(getline(ss,columnName,',')) {
-        columnCount++;
+    while(getline(ss,columnName,',')) { //Проверка на совпадение количества добавляемых
+        columnCount++;                  //элементов с количеством колонок в таблице
     }
     for (Node * current = query.values->head;current!=nullptr;current=current->next,columnCount--);
     if (columnCount!=1) {
@@ -74,7 +100,7 @@ void insertCSV(const Schema& schema, const SQLQuery& query) {
         outfile << endl;    //Закрываем файл
         outfile.close();    //Обновляем первичный ключ в файле
         updatePrimaryKey(schema.name+"/"+query.tableName+"/"+query.tableName, primaryKey + 1);
-        cout << "Database updated succesfully. " << endl;
+        cout << "Database updated succesfully. Path: " << filePath << endl;
     } else {
         cout << "An error occured when opening file " << filePath << endl;
     }
@@ -164,7 +190,7 @@ void deleteFromCSV(const Schema& schema, const SQLQuery& query){
         outfile.close();
         remove(filePath.c_str());  //Удаляем прошлый основной файл
         rename((filePath + ".tmp").c_str(), filePath.c_str());  //Переименовываем временный в основной
-        cout << "Database updated succesfully. " << filePath << endl;
+        cout << "Database updated succesfully. Path: " << filePath << endl;
         }else {
             cout << "An error occured when opening file " << filePath << endl;
         }
