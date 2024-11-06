@@ -30,11 +30,11 @@ int main(){
                 unlock(schema.name,parsedQuery.tableName);
             }
         }if (parsedQuery.action == "SELECT"){   //Вызов функции выборки
-            if (isUnlocked(schema.name, parsedQuery.tableName)){
-                lock(schema.name,parsedQuery.tableName);
-                //костыль
-                unlock(schema.name,parsedQuery.tableName);
-            }
+            //Нужна проверка блокировки двух таблиц
+            //Блокировка двух таблиц
+            parsedQuery.tableName = "table1";
+            selectTables(schema, parsedQuery); //МОЖНО СДЕЛАТЬ ОБРАЩЕНИЕ ПО ИНДЕКСУ ФЛИСТА
+            //Разблокировка двух таблиц
         }if (parsedQuery.action == "EXIT"){ //Выход из программы
             return 0;
         }
@@ -47,6 +47,7 @@ INSERT INTO table2 VALUES ('17', 'chicken')
 DELETE FROM table1 WHERE table1.column3 = '123' AND table1.column1 = 'chicken'
 DELETE FROM table1 WHERE table1.table1_pk = '4'
 DELETE FROM table1 WHERE table2.column1 = '17'
-SELECT table1.
+SELECT table1.column1 table2.column1 FROM table1, table2
+WHERE table1.column1 = table2.column2 AND table1.column2 = 'string'
 EXIT
 */

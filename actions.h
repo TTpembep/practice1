@@ -18,7 +18,10 @@ int getRowCount(const string& filePath);
 void insertCSV(const Schema& schema, const SQLQuery& query);
 
 string buildConditionString(Node* node);
-bool isConditionTrue(const string& line, const string& columnNames, const string* delLine);
+bool isConditionTrue(const string& row, const string& columnNames, const string* line);
 void deleteFromCSV(const Schema& schema, const SQLQuery& query);
+
+string superPrintFunc(const string& row, const string& columnNames, const string& line);
+void selectTables(const Schema& schema, const SQLQuery& query);
 
 #endif

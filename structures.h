@@ -86,6 +86,15 @@ struct fList {  //Структура данных для односвязанн�
         }
         head = nullptr;
     }
+    Node* operator[] (const int index) {    //Обращение по индексу
+        if (head == nullptr) return nullptr;
+        Node* p = head;
+        for (int i = 0; i < index; i++) {
+            p = p->next;
+            if (!p) return nullptr;
+        }
+        return p;
+    }
 };
 struct Schema { //Структура данных для хранения информации о схеме
     string name;
@@ -94,11 +103,12 @@ struct Schema { //Структура данных для хранения инф
 struct SQLQuery {
     string action;  //Запись действия
     string tableName;   //Запись имени таблицы при добавлении
-    fList* values;  //Запись значений
-    string delLine; //Обработка строки функции DELETE
+    fList* values;  //Запись значений INSERT
+    string line; //Запись строки WHERE
 
-    fList* tables;  //Запись таблиц фильтра WHERE
-    fList* columns; //Запись колонок фильтра WHERE
+    fList* tables;  //Запись таблиц SELECT
+    fList* columns; //Запись колонок SELECT
+    
     string condition;   //Запись оператора OR AND
     
     bool isRight;   //Проверка синтаксиса

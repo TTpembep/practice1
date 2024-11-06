@@ -115,8 +115,8 @@ string buildConditionString(Node* node) {
     return ss.str();
 }
 
-bool isConditionTrue(const string& line, const string& columnNames, const string& delLine) {
-    stringstream ss(delLine);
+bool isConditionTrue(const string& row, const string& columnNames, const string& line) {
+    stringstream ss(line);
     string token;
     fList* tokens = new fList();    //Разбиваем запрос на отдельные части
     while (getline(ss, token, ' ')) {
@@ -136,8 +136,8 @@ bool isConditionTrue(const string& line, const string& columnNames, const string
             Node* leftPart = tokens->head->next;
             Node* rightPart = andOrNode->next;
             //Рекурсивно проверяем левую и правую части
-            bool leftResult = isConditionTrue(line, columnNames, buildConditionString(leftPart));
-            bool rightResult = isConditionTrue(line, columnNames, buildConditionString(rightPart));
+            bool leftResult = isConditionTrue(row, columnNames, buildConditionString(leftPart));
+            bool rightResult = isConditionTrue(row, columnNames, buildConditionString(rightPart));
             //Возвращаем результат в соответствии с оператором
             if (operatorToken == "AND") {
                 return leftResult && rightResult;
@@ -157,13 +157,13 @@ bool isConditionTrue(const string& line, const string& columnNames, const string
         }
         ss.str(""); //Очищаем поток
         string value = tokens->head->next->next->data;  //Достаем нужное значение
-        ss << line; //Текущую строку вносим в поток
-        string current_value;
-        while (getline(ss, current_value,',') && count!=0){
+        ss << row; //Текущую строку вносим в поток
+        string curVal;
+        while (getline(ss, curVal,',') && count!=0){
             count--;    //Доходим до нужной колонки
         }
-        if (current_value == value) {   //Проверяем совпадения значений
-            return current_value == value;  //Если верно - строка не записывается
+        if (curVal == value) {   //Проверяем совпадения значений
+            return curVal == value;  //Если верно - строка не записывается
         }
     }
     tokens->clear();
@@ -178,12 +178,12 @@ void deleteFromCSV(const Schema& schema, const SQLQuery& query){
     while(infile.is_open()){
         ofstream outfile(filePath + ".tmp", ios::out); //Открытие временного файла
         if (infile.is_open() && outfile.is_open()) {
-            string line, columnNames;
+            string row, columnNames;
             getline(infile,columnNames);    //Запись строки колонок
             outfile << columnNames << endl;
-            while (getline(infile, line)) {
-                if (!isConditionTrue(line, columnNames, query.delLine)) { 
-                    outfile << line << endl;    //Если условие не выполняется, записываем строку в временный файл
+            while (getline(infile, row)) {
+                if (!isConditionTrue(row, columnNames, query.line)) { 
+                    outfile << row << endl;    //Если условие не выполняется, записываем строку в временный файл
                 }
             }
         infile.close();
@@ -198,4 +198,100 @@ void deleteFromCSV(const Schema& schema, const SQLQuery& query){
         filePath = schema.name+"/"+query.tableName+"/" +to_string(fileCount)+ ".csv";
         infile.open(filePath);
     }
+}
+
+string superPrintFunc(const string& row, const string& columnNames, const string& line) {
+    stringstream ss(line);
+    string token;
+    fList* tokens = new fList();    //Разбиваем запрос на отдельные части
+    while (getline(ss, token, ' ')) {
+        tokens->push_back(token);
+    }
+    
+    string column = tokens->head->data;
+    stringstream sss(columnNames);
+    string columnName;
+    int count=0;
+    while(getline(sss,columnName,',') && columnName!=column){
+        count++;    //Пока не дошли до нужной колонки считаем
+    }
+    sss.str(""); //Очищаем поток
+    //string value = tokens->head->next->next->data;  //Достаем нужное значение
+    sss << row; //Текущую строку вносим в поток
+    string curVal;
+    string curPk;
+    getline(sss,curPk,',');
+    count--;
+    while (getline(sss, curVal,',') && count!=0){
+        count--;    //Доходим до нужной колонки
+    }
+    //cout << curVal << endl;
+    tokens->clear();
+    delete tokens;
+    return curPk + "," + curVal;
+}
+void selectTables(const Schema& schema, const SQLQuery& query){
+    string tmPath = schema.name+"/"+"tmp.csv";
+    string iterPath = schema.name+"/"+"iter.csv";
+    
+    Node* curTab = query.tables->head;
+    Node* curCol = query.columns->head;
+    while (curTab != nullptr){
+        ofstream tmpfile (tmPath, ios::out); //Создание временного файла для отборки
+        int fileCount=1;
+        string filePath = schema.name+"/"+curTab->data+"/" +to_string(fileCount)+ ".csv";
+        ifstream infile(filePath);
+        ifstream iterfile(iterPath);
+        while(infile.is_open()){
+            if (infile.is_open() && iterfile.is_open()){
+                string iterRow;
+                getline(iterfile, iterRow);
+                tmpfile << iterRow + "," + curTab->data + "_pk," + curCol->data << endl;
+                infile.close();
+                string row, columnNames;
+                while(getline(iterfile,iterRow)){
+                    infile.open(filePath);
+                    getline(infile,columnNames);
+                    while (getline(infile, row)) {  //что-то кто-то
+                        tmpfile << iterRow + "," + superPrintFunc(row, columnNames, curCol->data) << endl;
+                    }
+                    infile.close();
+                }
+                infile.close();
+                iterfile.close();
+            }else if(infile.is_open()){
+                string row, columnNames;
+                getline(infile,columnNames);
+                tmpfile << curTab->data + "_pk," + curCol->data << endl;
+                while (getline(infile, row)) {  //что-то кто-то
+                    tmpfile << superPrintFunc(row, columnNames, curCol->data) << endl;
+                }
+                infile.close();
+            }else {
+                cout << "An error occured when opening file " << filePath << endl;
+            }
+        
+            fileCount++;    //Если файлов несколько переходит к следующему
+            filePath = schema.name+"/"+query.tableName+"/" +to_string(fileCount)+ ".csv";
+            infile.open(filePath);
+        }
+        curTab = curTab->next;
+        curCol = curCol->next;
+        tmpfile.close();
+        rename(tmPath.c_str(), iterPath.c_str());  //Переименовываем временный в основной
+    }
+    remove(tmPath.c_str());
+    ifstream file(iterPath);
+        string result;
+        while (getline(file, result)){
+            stringstream ss (result);
+            string temp;
+            while (getline(ss, temp, ',')){
+                cout << temp << "\t";
+                //getline(ss, temp, ',');
+                //cout << temp << "\t";
+            }cout << endl;
+        }
+        file.close();
+    remove(iterPath.c_str());
 }

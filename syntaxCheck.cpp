@@ -7,29 +7,26 @@ bool isServiceWord(string word){
 }
 SQLQuery syntaxCheck(string query){
     SQLQuery temp;
+    temp.isRight = false;
     stringstream ss (query);
     getline(ss, temp.action, ' ');
     string token;   //Проверка синтаксиса команды вставки
     if (temp.action == "INSERT"){
         getline(ss, token, ' ');
         if (token!="INTO"){
-            temp.isRight = false;
             return temp;
         }
         getline(ss, token, ' ');
         if (isServiceWord(token)){
-            temp.isRight = false;
             return temp;
         }
         temp.tableName = token;
         getline(ss, token, ' ');
         if (token!="VALUES"){
-            temp.isRight = false;
             return temp;
         }
         getline(ss, token);
         if (token[0] != '(' || token[token.size()-1] != ')'){
-            temp.isRight = false;
             return temp;
         }
         temp.values = new fList();
@@ -45,21 +42,18 @@ SQLQuery syntaxCheck(string query){
     if (temp.action == "DELETE"){ 
         getline(ss, token, ' ');    
         if (token!="FROM"){         
-            temp.isRight = false;
             return temp;
         }
         getline(ss, token, ' ');
         if (isServiceWord(token)){
-            temp.isRight = false;
             return temp;
         }
         temp.tableName = token;
         getline(ss, token, ' ');
         if (token!="WHERE"){
-            temp.isRight = false;
             return temp;
         }
-        temp.delLine = token;
+        temp.line = token;
         getline(ss,token);  //PARCER START
         stringstream valueSS (token);
         string value;
@@ -75,21 +69,21 @@ SQLQuery syntaxCheck(string query){
                     return temp;
                 }
                 getline(tempSS,tempVal);
-                temp.delLine += ' ' + tempVal;
+                temp.line += ' ' + tempVal;
                 temp.isRight = true;
             }
             if (value == "=" && counter == 2){
-                temp.delLine += ' ' + value;
+                temp.line += ' ' + value;
                 temp.isRight = true;
             }
             if (value[0] == '\'' && counter == 3){
                 value.erase(0,1);
                 value.erase(value.size()-1,1);
-                temp.delLine += ' ' + value;
+                temp.line += ' ' + value;
                 temp.isRight = true;
             }
             if ((value == "AND" || value == "OR") && (counter == 4)){
-                temp.delLine += ' ' + value;
+                temp.line += ' ' + value;
                 counter = 0;
                 temp.isRight = true;
             }
@@ -97,27 +91,36 @@ SQLQuery syntaxCheck(string query){
         }//PARCER END
         return temp;
     }   //Проверка синтаксиса функции выборки
-    if (temp.action == "SELECT"){  //Требуется переработка
-        getline(ss, token, ' ');    //Из фунции для DELETE 
-        if (token!="FROM"){         //В функцию для SELECT
-            temp.isRight = false;
-            return temp;
-        }
-        getline(ss, token, ' ');
-        if (isServiceWord(token)){
-            temp.isRight = false;
-            return temp;
-        }
-        temp.tableName = token;
-        getline(ss, token, ' ');
-        if (token!="WHERE"){
-            temp.isRight = false;
-            return temp;
-        }
-        getline(ss,token);  //PARCER START
-        temp.values = new fList();
+    if (temp.action == "SELECT"){
         temp.tables = new fList();
         temp.columns = new fList();
+        while (getline(ss, token, ' ') && token != "FROM"){
+            if (token.find('.') != string::npos){
+                stringstream tempSS(token);
+                string tempVal;
+                getline(tempSS,tempVal,'.');
+                if (isServiceWord(tempVal)){
+                    return temp;
+                }temp.tables->push_back(tempVal);
+                getline(tempSS,tempVal);
+                temp.columns->push_back(tempVal);
+            }
+        }
+        if (token!="FROM"){         
+            return temp;
+        }getline(ss, token, ' ');
+        while (getline(ss, token, ' ') && token != "WHERE"){
+            temp.isRight = false;
+            if (token.find(',') != string::npos){
+                token.erase(token.size()-1,1);
+            }if (temp.tables->find(token) == nullptr){
+                return temp;
+            }
+            temp.isRight = true;
+        }
+        
+        /*  //WHERE PARCER START
+        temp.values = new fList();
         stringstream valueSS (token);
         string value;
         int counter = 1;
@@ -149,7 +152,7 @@ SQLQuery syntaxCheck(string query){
             }
             counter++;
         }//PARCER END
-
+        */
         //temp.tables->print();
         //temp.columns->print();
         //temp.values->print();
@@ -163,3 +166,8 @@ SQLQuery syntaxCheck(string query){
     }temp.isRight = false;
     return temp;
 }
+/*
+SELECT table1.column1 table2.column1 FROM table1, table2
+WHERE table1.column1 = table2.column2 AND table1.column2 = 'string'
+EXIT
+*/
