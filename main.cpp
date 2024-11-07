@@ -50,4 +50,5 @@ DELETE FROM table1 WHERE table2.column1 = '17'
 SELECT table1.column1 table2.column1 FROM table1, table2
 WHERE table1.column1 = table2.column2 AND table1.column2 = 'string'
 EXIT
+DELETE FROM table2 WHERE table2_pk = '3'
 */

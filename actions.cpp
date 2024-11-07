@@ -36,7 +36,6 @@ int getPrimaryKey(const string& tablePath ){
     }
     return primaryKey;
 }
-
 void updatePrimaryKey(const string& tableName, int newPrimaryKey) {
     string filePath = tableName + "_pk_sequence";
     ofstream outfile(filePath);
@@ -45,7 +44,6 @@ void updatePrimaryKey(const string& tableName, int newPrimaryKey) {
         outfile.close();
     }
 }
-
 int getRowCount(const string& filePath) {
     ifstream infile(filePath);
     int count = 0;
@@ -56,7 +54,6 @@ int getRowCount(const string& filePath) {
     infile.close();
     return count;
 }
-
 void insertCSV(const Schema& schema, const SQLQuery& query) {
     int primaryKey = getPrimaryKey(schema.name+"/"+query.tableName+"/"+query.tableName);
     int fileCount= 1;
@@ -114,7 +111,6 @@ string buildConditionString(Node* node) {
     }
     return ss.str();
 }
-
 bool isConditionTrue(const string& row, const string& columnNames, const string& line) {
     stringstream ss(line);
     string token;
@@ -170,7 +166,6 @@ bool isConditionTrue(const string& row, const string& columnNames, const string&
     delete tokens;
     return false;
 }
-
 void deleteFromCSV(const Schema& schema, const SQLQuery& query){
     int fileCount=1;
     string filePath = schema.name+"/"+query.tableName+"/" +to_string(fileCount)+ ".csv";
@@ -181,16 +176,18 @@ void deleteFromCSV(const Schema& schema, const SQLQuery& query){
             string row, columnNames;
             getline(infile,columnNames);    //Запись строки колонок
             outfile << columnNames << endl;
+            bool isChanged = false;
             while (getline(infile, row)) {
                 if (!isConditionTrue(row, columnNames, query.line)) { 
                     outfile << row << endl;    //Если условие не выполняется, записываем строку в временный файл
-                }
+                }else isChanged = true;
             }
-        infile.close();
-        outfile.close();
-        remove(filePath.c_str());  //Удаляем прошлый основной файл
-        rename((filePath + ".tmp").c_str(), filePath.c_str());  //Переименовываем временный в основной
-        cout << "Database updated succesfully. Path: " << filePath << endl;
+            infile.close();
+            outfile.close();
+            remove(filePath.c_str());  //Удаляем прошлый основной файл
+            rename((filePath + ".tmp").c_str(), filePath.c_str());  //Переименовываем временный в основной
+            if (isChanged)cout << "Database updated succesfully. Path: " << filePath << endl;
+            else cout << "Nothing has changed. " << endl;
         }else {
             cout << "An error occured when opening file " << filePath << endl;
         }
@@ -216,7 +213,6 @@ string superPrintFunc(const string& row, const string& columnNames, const string
         count++;    //Пока не дошли до нужной колонки считаем
     }
     sss.str(""); //Очищаем поток
-    //string value = tokens->head->next->next->data;  //Достаем нужное значение
     sss << row; //Текущую строку вносим в поток
     string curVal;
     string curPk;
@@ -225,7 +221,6 @@ string superPrintFunc(const string& row, const string& columnNames, const string
     while (getline(sss, curVal,',') && count!=0){
         count--;    //Доходим до нужной колонки
     }
-    //cout << curVal << endl;
     tokens->clear();
     delete tokens;
     return curPk + "," + curVal;

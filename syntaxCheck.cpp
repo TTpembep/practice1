@@ -118,46 +118,6 @@ SQLQuery syntaxCheck(string query){
             }
             temp.isRight = true;
         }
-        
-        /*  //WHERE PARCER START
-        temp.values = new fList();
-        stringstream valueSS (token);
-        string value;
-        int counter = 1;
-        while (getline(valueSS,value, ' ')){
-            temp.isRight = false;
-            if (value.find('.') != string::npos && (counter == 1 || counter == 3)){
-                stringstream tempSS (value);
-                string tempVal;
-                getline(tempSS,tempVal,'.');
-                temp.tables->push_back(tempVal);
-                getline(tempSS,tempVal);
-                temp.columns->push_back(tempVal);
-                temp.values->push_back("SERVICEWORD");
-                temp.isRight = true;
-            }
-            if (value == "=" && counter == 2){
-                temp.isRight = true;
-            }
-            if (value[0] == '\'' && counter == 3){
-                value.erase(0,1);
-                value.erase(value.size()-1,1);
-                temp.values->push_back(value);
-                temp.isRight = true;
-            }
-            if ((value == "AND" || value == "OR") && (counter == 4)){
-                temp.condition = value;
-                counter = 0;
-                temp.isRight = true;    //Можно доработать для нескольких OR AND
-            }
-            counter++;
-        }//PARCER END
-        */
-        //temp.tables->print();
-        //temp.columns->print();
-        //temp.values->print();
-        //cout << temp.condition << endl;
-
         return temp;
     }
     if (temp.action == "EXIT" and query == "EXIT"){ 
@@ -166,8 +126,3 @@ SQLQuery syntaxCheck(string query){
     }temp.isRight = false;
     return temp;
 }
-/*
-SELECT table1.column1 table2.column1 FROM table1, table2
-WHERE table1.column1 = table2.column2 AND table1.column2 = 'string'
-EXIT
-*/
