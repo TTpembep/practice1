@@ -283,13 +283,21 @@ void selectTables(const Schema& schema, const SQLQuery& query){
     remove(tmPath.c_str());
     ifstream file(iterPath);
         string result;
+        getline(file,result);
+        stringstream ss (result);
+        string temp;
+        while (getline(ss, temp, ',')){
+            cout << temp << " ";
+            getline(ss, temp, ',');
+            cout << temp << "\t";
+        }cout << endl;
         while (getline(file, result)){
             stringstream ss (result);
             string temp;
             while (getline(ss, temp, ',')){
+                cout << "  " << temp << "      ";
+                getline(ss, temp, ',');
                 cout << temp << "\t";
-                //getline(ss, temp, ',');
-                //cout << temp << "\t";
             }cout << endl;
         }
         file.close();
