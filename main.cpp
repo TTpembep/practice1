@@ -30,11 +30,25 @@ int main(){
                 unlock(schema.name,parsedQuery.tableName);
             }
         }if (parsedQuery.action == "SELECT"){   //Вызов функции выборки
-            //Нужна проверка блокировки двух таблиц
-            //Блокировка двух таблиц
-            parsedQuery.tableName = "table1";
-            selectTables(schema, parsedQuery); //МОЖНО СДЕЛАТЬ ОБРАЩЕНИЕ ПО ИНДЕКСУ ФЛИСТА
-            //Разблокировка двух таблиц
+            Node* curTab = parsedQuery.tables->head;
+            bool unlockTrigger = true;
+            while (curTab != nullptr){  //Проверка блокировки двух таблиц
+                unlockTrigger = isUnlocked(schema.name, curTab->data);
+                curTab = curTab->next;
+            }
+            if (unlockTrigger){ 
+                curTab = parsedQuery.tables->head;
+                while (curTab != nullptr){  //Блокировка двух таблиц
+                    lock(schema.name, curTab->data);
+                    curTab = curTab->next;
+                }
+                selectTables(schema, parsedQuery);
+                curTab = parsedQuery.tables->head;
+                while (curTab != nullptr){  //Разблокировка двух таблиц
+                    unlock(schema.name, curTab->data);
+                    curTab = curTab->next;
+                }
+            }
         }if (parsedQuery.action == "EXIT"){ //Выход из программы
             return 0;
         }
@@ -51,4 +65,7 @@ SELECT table1.column1 table2.column1 FROM table1, table2
 WHERE table1.column1 = table2.column2 AND table1.column2 = 'string'
 EXIT
 DELETE FROM table2 WHERE table2_pk = '3'
+INSERT INTO table1 VALUES ('disco', 'alice', 'is', 'world')
+DELETE FROM table1 WHERE table1.table1_pk = '3'
+SELECT table1.column2 table2.column2 FROM table1, table2
 */

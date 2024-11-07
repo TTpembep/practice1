@@ -206,13 +206,13 @@ string superPrintFunc(const string& row, const string& columnNames, const string
     }
     
     string column = tokens->head->data;
-    stringstream sss(columnNames);
+    stringstream requiredColumn(columnNames);
     string columnName;
     int count=0;
-    while(getline(sss,columnName,',') && columnName!=column){
+    while(getline(requiredColumn,columnName,',') && columnName!=column){
         count++;    //Пока не дошли до нужной колонки считаем
     }
-    sss.str(""); //Очищаем поток
+    stringstream sss(row);
     sss << row; //Текущую строку вносим в поток
     string curVal;
     string curPk;
