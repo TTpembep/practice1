@@ -35,6 +35,7 @@ int main(){
             while (curTab != nullptr){  //Проверка блокировки двух таблиц
                 unlockTrigger = isUnlocked(schema.name, curTab->data);
                 curTab = curTab->next;
+                if (!unlockTrigger) break;
             }
             if (unlockTrigger){ 
                 curTab = parsedQuery.tables->head;
