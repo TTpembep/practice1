@@ -61,6 +61,8 @@ SQLQuery syntaxCheck(string query){
         while (getline(valueSS,value, ' ')){
             temp.isRight = false;
             if (value.find('.') != string::npos && (counter == 1 || counter == 3)){
+                temp.line += ' ' + value;
+                temp.isRight = true;
                 stringstream tempSS (value);
                 string tempVal;
                 getline(tempSS,tempVal,'.');
@@ -68,9 +70,6 @@ SQLQuery syntaxCheck(string query){
                     temp.isRight = false;
                     return temp;
                 }
-                getline(tempSS,tempVal);
-                temp.line += ' ' + tempVal;
-                temp.isRight = true;
             }
             if (value == "=" && counter == 2){
                 temp.line += ' ' + value;
@@ -118,6 +117,38 @@ SQLQuery syntaxCheck(string query){
             }
             temp.isRight = true;
         }
+        if (token!="WHERE"){
+            return temp;
+        }
+        temp.line = token;
+        getline(ss,token);  //PARCER START
+        stringstream valueSS (token);
+        string value;
+        int counter = 1;
+        while (getline(valueSS,value, ' ')){
+            temp.isRight = false;
+            if (value.find('.') != string::npos && (counter == 1 || counter == 3)){
+                temp.line += ' ' + value;
+                temp.isRight = true;
+            }
+            if (value == "=" && counter == 2){
+                temp.line += ' ' + value;
+                temp.isRight = true;
+            }
+            if (value[0] == '\'' && counter == 3){
+                value.erase(0,1);
+                value.erase(value.size()-1,1);
+                temp.line += ' ' + value;
+                temp.isRight = true;
+            }
+            if ((value == "AND" || value == "OR") && (counter == 4)){
+                temp.line += ' ' + value;
+                counter = 0;
+                temp.isRight = true;
+            }
+            counter++;
+        }//PARCER END
+
         return temp;
     }
     if (temp.action == "EXIT" and query == "EXIT"){ 

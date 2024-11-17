@@ -63,10 +63,21 @@ DELETE FROM table1 WHERE table1.column3 = '123' AND table1.column1 = 'chicken'
 DELETE FROM table1 WHERE table1.table1_pk = '4'
 DELETE FROM table1 WHERE table2.column1 = '17'
 SELECT table1.column1 table2.column1 FROM table1, table2
-WHERE table1.column1 = table2.column2 AND table1.column2 = 'string'
+WHERE table1.column1 = table2.column2 AND table1.column2 = 'alice'
 EXIT
 DELETE FROM table2 WHERE table2_pk = '3'
 INSERT INTO table1 VALUES ('disco', 'alice', 'is', 'world')
 DELETE FROM table1 WHERE table1.table1_pk = '3'
 SELECT table1.column2 table2.column2 FROM table1, table2
+DELETE FROM table1 WHERE table1.column3 = table1.column4
+
+1,somedata,12345,hello,hello
+6,disco,alice,is,world
+
+SELECT table1.column1 table2.column1 FROM table1, table2 WHERE table1.column2 = 'alice'
+SELECT table1.column1 table2.column1 FROM table1, table2 WHERE table1.column3 = table1.column4 AND table2.column1 = '17'
+SELECT table1.column1 table2.column1 FROM table1, table2 WHERE table2.column1 = '17' OR table2.column1 = 'wiki'
+SELECT table1.column1 table2.column1 FROM table1, table2 WHERE table1.column1 = table2.column2 AND table2.column1 = '17'
+
+SELECT table1.column1 table2.column1 FROM table1, table2 WHERE table1.column1 = 'disco' OR table2.column1 = 'wiki'
 */

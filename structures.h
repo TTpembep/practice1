@@ -105,12 +105,8 @@ struct SQLQuery {
     string tableName;   //Запись имени таблицы при добавлении
     fList* values;  //Запись значений INSERT
     string line; //Запись строки WHERE
-
     fList* tables;  //Запись таблиц SELECT
     fList* columns; //Запись колонок SELECT
-    
-    string condition;   //Запись оператора OR AND
-    
     bool isRight;   //Проверка синтаксиса
 };
 
